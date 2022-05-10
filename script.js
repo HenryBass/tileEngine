@@ -29,7 +29,7 @@ class Map {
     this.map[tile.x][tile.y] = tile
   }
   kill(tile) {
-    this.map[tile.x][tile.y] = 0
+    this.map[tile.x][tile.y] = undefined
   }
   get(x, y) {
     return this.map[x][y]
@@ -102,6 +102,17 @@ class Player extends Tile {
       }
     }
 
+    if (((Math.abs(xmov) + Math.abs(ymov)) !== 0)) {
+        if (map.get(x + xmov, y + ymov) === undefined) {
+          map.place(new Player(x + xmov, y + ymov))
+          map.kill(this)
+
+      }
+
+
+    }
+    
+
     this.updated = true;
     return map
   }
@@ -123,9 +134,10 @@ class Sand extends Tile {
   }
   update(map, btn, x, y) {
 
-    if (map.get(x, y + 1).sprite == undefined) {
-    map.place(new Sand(x, y + 1))
-    map.kill(this)
+    if (map.get(x, y + 1) === undefined) {
+
+      map.place(new Sand(x, y + 1))
+      map.kill(this)
     }
     
     this.updated = true;
@@ -163,13 +175,10 @@ function display() {
   for (var i = 0; i < activeMap.height; i++) {
     for (var j = 0; j < activeMap.width; j++) {
 
-      try {
         if (activeMap.map[i][j] !== undefined && activeMap.map[i][j].updated == false) {
           activeMap.map = activeMap.map[i][j].update(activeMap, btn, i, j).map;
        }
-      } catch {
-        0;
-      }
+
 
 
 
@@ -200,4 +209,4 @@ window.onkeydown = function (e) {
 }
 
 GameStart()
-setInterval(display, 10);
+setInterval(display, 100);
