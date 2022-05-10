@@ -2,12 +2,16 @@ var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 
 var activeMap;
+var btn = 0;
 var colors = {
-    WHITE: "#FFFFFF",
-    BLACK: "#000000",
-    RED:   "#FF0000",
-    BLUE: "#0000FF",
-    GREEN: "#00FF00"
+    WHITE:   "#FFFFFF",
+    BLACK:   "#000000",
+    RED:     "#FF0000",
+    GREEN:   "#00FF00",
+    BLUE:    "#0000FF",
+    YELLOW:  "#FFFF00",
+    CYAN:    "#00FFFF",
+    MAGENTA: "#FF00FF"
   };
 
 class Map {
@@ -26,16 +30,22 @@ class Map {
 }
 
 class Tile {
-  constructor(x, y, c) {
+  constructor(x, y) {
     this.x = x
     this.y = y
-    this.col = c
-    this.sprite = "001100001100112211112211001100001100";
+
+    this.sprite = 
+    "777111" +
+    "777111" + 
+    "777111" + 
+    "111777" + 
+    "111777" + 
+    "111777";
   }
-  update (map, mv, act) {
+  update (map, btn, x, y) {
     return map
   }
-  render (self, x, y) {
+  render (x, y) {
     var wmult = 512/activeMap.width;
     var hmult = 512/activeMap.height;
     for(var i = 0; i < 6; i++) {
@@ -50,26 +60,60 @@ class Tile {
     }
 }
 
-function Start() {
+// Start Game Code
+
+class Player extends Tile {
+  constructor(x, y) {
+    super(x, y)
+
+    this.sprite = 
+    "334433" +
+    "330033" + 
+    "366663" + 
+    "032230" + 
+    "322223" + 
+    "323323";
+  }
+  update (map, btn, x, y) {
+    map.place(new Player(1, 1))
+    console.log(btn)
+    return map
+  }
+  
+}
+
+function GameStart() {
     map = new Map(9, 9, "GREEN")
-    map.place(new Tile(3, 1, "BLUE"))
+    map.place(new Tile(6, 1))
+    map.place(new Player(5, 1))
+
     activeMap = map;
 
 }
 
-function update() {
+function GameUpdate() {
+  
+}
 
+// End Game Code
+
+window.onkeydown = function(e) {
+  btn = e.keycode
+}
+window.onkeyup = function(e) {
+  btn = 0
 }
 
 function display() {
-    update()
+    GameUpdate()
     var wmult = 512/activeMap.width;
     var hmult = 512/activeMap.height;
     for(var i = 0; i < activeMap.height; i++) {
 
         for(var j = 0; j < activeMap.width; j++) {
             try {
-                activeMap.map[i][j].render(activeMap.map[i][j], i, j)
+                activeMap.map = activeMap.map[i][j].update(activeMap, btn, i, j).map
+                activeMap.map[i][j].render(i, j)
             } catch {
                 ctx.fillStyle = colors[activeMap.bg.toUpperCase()]
                 ctx.fillRect(i * wmult,j * hmult, wmult, hmult);
@@ -77,9 +121,9 @@ function display() {
             
         }
     }
-    
+    display
 
 }
 
-Start()
+GameStart()
 setInterval(display(), 1000); 
