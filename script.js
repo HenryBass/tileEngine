@@ -39,9 +39,8 @@ class Tile {
     var wmult = 512/activeMap.width;
     var hmult = 512/activeMap.height;
     for(var i = 0; i < 6; i++) {
-
+ 
         for(var j = 0; j < 6; j++) {
-            console.log(this.col)
             ctx.fillStyle = colors[Object.keys(colors)[this.sprite[i + (6 * j)]]]
             ctx.fillRect(x * wmult  + (wmult/6 * i),y * hmult + (hmult/6 * j), wmult / 6, hmult / 6);
             
