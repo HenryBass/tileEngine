@@ -30,6 +30,9 @@ class Map {
   kill(tile) {
     this.map[tile.x][tile.y] = 0
   }
+  get(x, y) {
+    return this.map[x][y]
+  }
 }
 
 class Tile {
@@ -70,8 +73,7 @@ class Tile {
 class Player extends Tile {
   constructor(x, y) {
     super(x, y)
-    this.updated = false
-
+    
     this.sprite =
       "334433" +
       "330033" +
@@ -84,15 +86,49 @@ class Player extends Tile {
     if (btn != 0) {
       if (btn == "w") {
         map.place(new Player(x, y - 1))
+        map.kill(this)
       } else if (btn == "a") {
         map.place(new Player(x - 1, y))
+        map.kill(this)
       } else if (btn == "s") {
         map.place(new Player(x, y + 1))
+        map.kill(this)
       } else if (btn == "d") {
         map.place(new Player(x + 1, y))
+        map.kill(this)
+      } else if (btn == "1") {
+        map.place(new Sand(x, y + 1))
+      } else if (btn == "2") {
+        map.place(new Tile(x, y + 1))
       }
-      map.kill(this)
+      
     }
+    this.updated = true;
+    return map
+  }
+
+}
+
+class Sand extends Tile {
+  constructor(x, y) {
+    super(x, y)
+    this.updated = false
+
+    this.sprite =
+      "555555" +
+      "555555" +
+      "555555" +
+      "555555" +
+      "555555" +
+      "555555";
+  }
+  update(map, btn, x, y) {
+
+    if (map.get(y, x + 1).sprite == undefined) {
+    map.place(new Sand(x, y + 1))
+    map.kill(this)
+    }
+    
     this.updated = true;
     return map
   }
@@ -101,8 +137,9 @@ class Player extends Tile {
 
 function GameStart() {
   map = new Map(9, 9, "GREEN")
-  map.place(new Tile(6, 1))
-  map.place(new Player(5, 1))
+  map.place(new Tile(5, 7))
+  map.place(new Player(8, 8))
+  map.place(new Sand(5, 1))
 
   activeMap = map;
 
@@ -114,11 +151,10 @@ function GameUpdate() {
 
 // End Game Code
 
-window.onkeydown = function (e) {
-  btn = e.key
-}
-
 function display() {
+  if (btn == "r") {
+    map = new Map(9, 9, "GREEN")
+  }
   GameUpdate()
   var wmult = 512 / activeMap.width;
   var hmult = 512 / activeMap.height;
@@ -129,7 +165,7 @@ function display() {
       try {
         if (activeMap.map[i][j] !== undefined && activeMap.map[i][j].updated == false) {
           activeMap.map = activeMap.map[i][j].update(activeMap, btn, i, j).map;
-        }
+       }
       } catch {
         0;
       }
@@ -156,6 +192,10 @@ function display() {
   btn = 0;
 
 
+}
+
+window.onkeydown = function (e) {
+  btn = e.key
 }
 
 GameStart()
