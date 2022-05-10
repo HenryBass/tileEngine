@@ -27,22 +27,27 @@ class Map {
   place (tile) {
       this.map[tile.x][tile.y] = tile
   }
+  kill (tile) {
+    this.map[tile.x][tile.y] = 0
+}
 }
 
 class Tile {
   constructor(x, y) {
     this.x = x
     this.y = y
+    this.updated = false
 
     this.sprite = 
     "777111" +
     "777111" + 
-    "777111" + 
-    "111777" + 
+    "775511" + 
+    "115577" + 
     "111777" + 
     "111777";
   }
   update (map, btn, x, y) {
+    
     return map
   }
   render (x, y) {
@@ -65,6 +70,7 @@ class Tile {
 class Player extends Tile {
   constructor(x, y) {
     super(x, y)
+    this.updated = false
 
     this.sprite = 
     "334433" +
@@ -75,8 +81,19 @@ class Player extends Tile {
     "323323";
   }
   update (map, btn, x, y) {
-    map.place(new Player(1, 1))
-    console.log(btn)
+    if (btn != 0) {
+      if(btn == "w") {
+        map.place(new Player(x, y - 1))
+      } else if (btn == "a") {
+        map.place(new Player(x - 1, y))
+      } else if (btn == "s") {
+        map.place(new Player(x, y + 1))
+      }else if (btn == "d") {
+        map.place(new Player(x + 1, y))
+      }
+      map.kill(this)
+    }
+    this.updated = false;
     return map
   }
   
@@ -98,10 +115,7 @@ function GameUpdate() {
 // End Game Code
 
 window.onkeydown = function(e) {
-  btn = e.keycode
-}
-window.onkeyup = function(e) {
-  btn = 0
+  btn = e.key
 }
 
 function display() {
@@ -112,7 +126,10 @@ function display() {
 
         for(var j = 0; j < activeMap.width; j++) {
             try {
-                activeMap.map = activeMap.map[i][j].update(activeMap, btn, i, j).map
+                if (activeMap.map[i][j].updated !== true) {
+                  activeMap.map = activeMap.map[i][j].update(activeMap, btn, i, j).map;
+                  activeMap.map[i][j].updated = false;
+                }
                 activeMap.map[i][j].render(i, j)
             } catch {
                 ctx.fillStyle = colors[activeMap.bg.toUpperCase()]
@@ -121,9 +138,11 @@ function display() {
             
         }
     }
-    display
+
+    btn = 0;
+
 
 }
 
 GameStart()
-setInterval(display(), 1000); 
+setInterval(display, 10); 
