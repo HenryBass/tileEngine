@@ -21,15 +21,19 @@ class Map {
     this.height = h
     this.map = []
     for (var i = 0; i < h; i++) {
-      this.map.push([new Array(w)])
+      this.map.push([])
+      for (var j = 0; j < w; j++) {
+        this.map[i].push(0)
+      }
     }
     this.bg = bg
+
   }
   place(tile) {
     this.map[tile.x][tile.y] = tile
   }
   kill(tile) {
-    this.map[tile.x][tile.y] = undefined
+    this.map[tile.x][tile.y] = 0
   }
   get(x, y) {
     return this.map[x][y]
@@ -103,7 +107,7 @@ class Player extends Tile {
     }
 
     if (((Math.abs(xmov) + Math.abs(ymov)) !== 0)) {
-        if (map.get(x + xmov, y + ymov) === undefined) {
+        if (map.get(x + xmov, y + ymov) === 0) {
           map.place(new Player(x + xmov, y + ymov))
           map.kill(this)
 
@@ -134,7 +138,7 @@ class Sand extends Tile {
   }
   update(map, btn, x, y) {
 
-    if (map.get(x, y + 1) === undefined) {
+    if (map.get(x, y + 1) === 0) {
 
       map.place(new Sand(x, y + 1))
       map.kill(this)
@@ -175,9 +179,14 @@ function display() {
   for (var i = 0; i < activeMap.height; i++) {
     for (var j = 0; j < activeMap.width; j++) {
 
-        if (activeMap.map[i][j] !== undefined && activeMap.map[i][j].updated == false) {
+      try {
+        if (activeMap.map[i][j] !== 0 && activeMap.map[i][j].updated == false) {
           activeMap.map = activeMap.map[i][j].update(activeMap, btn, i, j).map;
        }
+      } catch {
+        0;
+      }
+
 
 
 
