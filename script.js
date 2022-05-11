@@ -103,6 +103,8 @@ class Player extends Tile {
         map.place(new Sand(x, y + 1))
       } else if (btn == "2") {
         map.place(new Tile(x, y + 1))
+      } else if (btn == "3") {
+        map.kill(map.get(x, y + 1))
       }
     }
 
